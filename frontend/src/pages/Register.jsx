@@ -1,0 +1,4 @@
+/*
+  This is the Registration page.
+  It will have a form for users to sign up for a new account.
+*/

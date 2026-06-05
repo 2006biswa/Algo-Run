@@ -1,0 +1,3 @@
+/*
+  This file takes our App component and renders it into the actual HTML DOM.
+*/

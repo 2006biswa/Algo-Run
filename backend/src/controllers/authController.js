@@ -1,0 +1,4 @@
+/*
+  This file handles the logic for user authentication.
+  It will have functions to register a new user and login an existing user.
+*/

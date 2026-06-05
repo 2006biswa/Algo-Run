@@ -1,0 +1,3 @@
+/*
+  This file is responsible for connecting our backend to the MongoDB database.
+*/
