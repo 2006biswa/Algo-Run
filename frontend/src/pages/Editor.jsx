@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import EditorCode from 'react-simple-code-editor';
+import ReactSimpleCodeEditor from 'react-simple-code-editor';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-c';
 import 'prismjs/components/prism-cpp';
 import 'prismjs/themes/prism-twilight.css';
 import api from '../api';
+
+const EditorCode = ReactSimpleCodeEditor.default || ReactSimpleCodeEditor;
 
 function Editor() {
   const [code, setCode] = useState('#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, AlgoRun!" << endl;\n    return 0;\n}');
