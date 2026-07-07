@@ -11,7 +11,8 @@ import api from '../api';
 const EditorCode = ReactSimpleCodeEditor.default || ReactSimpleCodeEditor;
 
 function Editor() {
-  const [code, setCode] = useState('#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, AlgoRun!" << endl;\n    return 0;\n}');
+  const [code, setCode] = useState('#include <iostream>\nusing namespace std;\n\nint main() {\n    int a, b;\n    cin >> a >> b;\n    cout << "Sum: " << (a + b) << endl;\n    return 0;\n}');
+  const [input, setInput] = useState('5 10');
   const [output, setOutput] = useState('');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ function Editor() {
     setOutput('Running...');
     setStatus('');
     try {
-      const res = await api.post('/code/run', { code });
+      const res = await api.post('/code/run', { code, input });
       setOutput(res.data.output);
       setStatus(res.data.status);
     } catch (err) {
@@ -62,6 +63,17 @@ function Editor() {
             }}
           />
         </div>
+      </div>
+
+      <div className="glass-panel">
+        <h3 style={{ marginBottom: '1rem' }}>Standard Input</h3>
+        <textarea
+          className="input-field"
+          style={{ width: '100%', minHeight: '100px', fontFamily: 'monospace', resize: 'vertical' }}
+          placeholder="Enter input for your code here..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
       </div>
 
       <div className="glass-panel">

@@ -14,7 +14,7 @@ if (!fs.existsSync(tempDir)) {
 }
 
 router.post('/run', authMiddleware, async (req, res) => {
-    const { code } = req.body;
+    const { code, input } = req.body;
     
     if (!code) {
         return res.status(400).json({ error: 'Code cannot be empty' });
@@ -23,9 +23,13 @@ router.post('/run', authMiddleware, async (req, res) => {
     const uniqueId = randomUUID();
     const filePath = path.join(tempDir, `${uniqueId}.cpp`);
     const outPath = path.join(tempDir, `${uniqueId}.exe`); // On Windows, g++ produces .exe. If Linux, it would be just ${uniqueId}.
+    const inputPath = path.join(tempDir, `${uniqueId}.txt`);
 
-    // 1. Write the code to a temporary file
+    // 1. Write the code and optional input to temporary files
     fs.writeFileSync(filePath, code);
+    if (input !== undefined && input !== null) {
+        fs.writeFileSync(inputPath, input);
+    }
 
     // 2. Compile and execute
     const compileCommand = `g++ ${filePath} -o ${outPath}`;
@@ -39,11 +43,16 @@ router.post('/run', authMiddleware, async (req, res) => {
         }
 
         // 3. Execute the binary with a timeout (TLE prevention)
-        const runCommand = outPath;
+        // If input exists, pipe it into the executable
+        const runCommand = (input !== undefined && input !== null) 
+            ? `"${outPath}" < "${inputPath}"` 
+            : `"${outPath}"`;
+            
         const child = exec(runCommand, { timeout: 3000 }, (runError, runStdout, runStderr) => {
             // Clean up files
             try { fs.unlinkSync(filePath); } catch (e) {}
             try { fs.unlinkSync(outPath); } catch (e) {}
+            try { fs.unlinkSync(inputPath); } catch (e) {}
 
             let finalOutput = runStdout;
             let finalStatus = 'Success';
