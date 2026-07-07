@@ -1,3 +1,0 @@
-/*
-  This component represents the box that displays the output or errors after the code is run.
-*/

@@ -1,4 +1,0 @@
-/*
-  This is the Home page.
-  It will combine the CodeEditor and OutputWindow together.
-*/
