@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api', // Adjust in production
+    baseURL: 'https://algo-run.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {
