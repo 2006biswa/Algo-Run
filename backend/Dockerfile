@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Install g++ and other build tools required for compiling C++ code
 RUN apk update && apk add --no-cache g++ make
