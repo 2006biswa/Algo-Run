@@ -1,133 +1,80 @@
-<div align="center">
-  <img src="https://img.icons8.com/color/120/000000/code.png" alt="AlgoRun Logo" width="120" />
-  
-  # 🚀 AlgoRun
-  
-  **A High-Performance, Sandboxed Remote Code Execution Platform**
-  
-  [![React](https://img.shields.io/badge/Frontend-React-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
-  [![Node.js](https://img.shields.io/badge/Backend-Node.js-green?style=for-the-badge&logo=nodedotjs)](https://nodejs.org/)
-  [![Express.js](https://img.shields.io/badge/API-Express-lightgrey?style=for-the-badge&logo=express)](https://expressjs.com/)
-  [![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
+# AlgoRun
 
-  <p align="center">
-    AlgoRun brings the LeetCode experience to your browser. Write C++ code, hit run, and see your output instantly—powered by a secure, concurrent, and asynchronous backend.
-  </p>
-</div>
+AlgoRun is a full-stack remote code execution platform designed specifically for compiling and running C++ code securely in a cloud environment. It provides developers with an integrated web-based editor to write, execute, and track their programming submissions.
 
-<br/>
+## Features
 
-## ✨ Key Features
+- **Remote Code Execution:** Securely compiles and executes C++ code on a backend Linux container.
+- **User Authentication:** JWT-based stateless authentication with secure password hashing.
+- **Execution History:** Tracks and saves historical code submissions, timestamps, and outputs per user.
+- **In-Browser Editor:** Custom syntax-highlighted code editor utilizing PrismJS.
+- **Concurrent Execution:** Safely handles concurrent user submissions using isolated temporary file generation and cleanup processes.
 
-- **🛡️ Sandboxed Execution:** User-submitted code runs securely on the server with strict timeout (TLE) mechanisms to prevent infinite loops and server crashes.
-- **⚡ Async Pipeline:** Non-blocking compilation and execution architecture.
-- **🔒 JWT Authentication:** Secure, stateless authentication with protected API routes.
-- **🔀 Concurrent Processing:** Isolated temporary file handling ensures that multiple users can compile and execute code simultaneously without race conditions or overwriting.
+## Technology Stack
 
----
+- **Frontend:** React, Vite, React Router, Axios
+- **Backend:** Node.js, Express, child_process
+- **Database:** MongoDB, Mongoose
+- **Infrastructure:** Docker (Alpine Linux), Render (API), Vercel (Client)
 
-## 🏗️ System Architecture
+## Architecture Overview
 
-AlgoRun is built on a robust three-tier architecture ensuring perfect separation of concerns:
+When a user submits code via the frontend interface, the backend Node.js server intercepts the payload and provisions isolated `.cpp` files with unique UUIDs. The server then spawns a child process utilizing the system-level `g++` compiler within the Docker container to build and execute the binary. Standard output (stdout) and standard error (stderr) are captured asynchronously and returned to the client, while all memory and temporary artifacts are immediately wiped from the disk to preserve statelessness.
 
-```mermaid
-graph TD
-    subgraph Frontend ["Layer 1: Frontend (React)"]
-        A[Web Browser]
-        B[Code Editor Component]
-        C[Run Button]
-        A -->|Writes Code| B
-        B -->|Clicks| C
-    end
+## Local Development Setup
 
-    subgraph Backend ["Layer 2: Backend (Node + Express)"]
-        D[Express Server]
-        E[Temp File Generator]
-        F[g++ Compiler]
-        G[Execution Engine]
-        C -->|HTTP POST Code| D
-        D -->|Writes .cpp| E
-        E -->|Compiles| F
-        F -->|Runs Binary| G
-        G -->|Returns Output/Errors| D
-        D -->|Sends Output| A
-    end
+### Prerequisites
+- Node.js (v20 or higher)
+- MongoDB account (Atlas or local instance)
+- g++ compiler installed on your local machine (if testing the execution engine locally outside of Docker)
 
-    subgraph Database ["Layer 3: Database & Auth"]
-        H[(MongoDB)]
-        I[JWT Auth Middleware]
-        D <-->|Validates Requests| I
-        D <-->|Saves Submissions| H
-    end
-```
+### Installation
 
----
-
-## 💻 Tech Stack
-
-### Frontend
-* **React** - Component-based UI rendering
-* **Axios** - HTTP client for API requests
-* **react-simple-code-editor** - Lightweight, native code editing experience
-
-### Backend
-* **Node.js + Express** - High-performance asynchronous API server
-* **Mongoose** - Elegant MongoDB object modeling
-* **child_process** - Core module used for spawning `g++` compilation and execution tasks
-
-### Infrastructure & Security
-* **MongoDB Atlas** - Cloud database hosting
-* **JWT (JSON Web Tokens)** - Securing protected routes and sessions
-* **Bcrypt.js** - Secure password hashing
-
----
-
-## 📂 Project Structure
-
-```text
-AlgoRun/
-├── backend/                  # Layer 2 & 3
-│   ├── src/
-│   │   ├── controllers/      # API logic (auth, run, history)
-│   │   ├── middlewares/      # JWT protection
-│   │   ├── models/           # Mongoose schemas
-│   │   ├── routes/           # Endpoint mapping
-│   │   └── utils/            # Execution & Temp file helpers
-│   └── temp/                 # Sandboxed environment for C++ builds
-└── frontend/                 # Layer 1
-    └── src/
-        ├── components/       # Editor, Navbar, Output blocks
-        ├── pages/            # Home, Login, Register, History
-        └── services/         # Axios API configuration
-```
-
----
-
-## 🚀 Getting Started
-
-### 1. Clone the Repository
+1. Clone the repository
 ```bash
 git clone https://github.com/2006biswa/Algo-Run.git
 cd Algo-Run
 ```
 
-### 2. Setup the Backend
+2. Install backend dependencies
 ```bash
 cd backend
 npm install
-# Add your .env file with MONGO_URI and JWT_SECRET
-npm run dev
 ```
 
-### 3. Setup the Frontend
+3. Install frontend dependencies
 ```bash
 cd ../frontend
 npm install
-npm start
 ```
 
-<br/>
+### Environment Variables
 
-<div align="center">
-  <i>Built with passion as part of a 7-Day Full-Stack Mastery Plan.</i>
-</div>
+Create a `.env` file in the `backend/` directory with the following variables:
+```
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+```
+
+### Running the Application
+
+Start the backend server:
+```bash
+cd backend
+node server.js
+```
+
+Start the frontend development server:
+```bash
+cd frontend
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`.
+
+## Deployment
+
+The application is containerized using Docker to ensure the `g++` compilation environment is consistent in production. 
+- The backend is configured to be deployed as a Docker Web Service on Render.
+- The frontend is configured for deployment on Vercel.
