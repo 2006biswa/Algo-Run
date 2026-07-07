@@ -1,5 +1,5 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
@@ -20,7 +20,7 @@ router.post('/run', authMiddleware, async (req, res) => {
         return res.status(400).json({ error: 'Code cannot be empty' });
     }
 
-    const uniqueId = uuidv4();
+    const uniqueId = randomUUID();
     const filePath = path.join(tempDir, `${uniqueId}.cpp`);
     const outPath = path.join(tempDir, `${uniqueId}.exe`); // On Windows, g++ produces .exe. If Linux, it would be just ${uniqueId}.
 
